@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HERO POWDER — 2D Superhero Sandbox</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div id="game-app">
+    <!-- Top Header & Stats -->
+    <header id="top-bar">
+      <div class="brand">
+        <span class="logo-icon">⚡</span>
+        <h1>HERO POWDER</h1>
+        <span class="badge">SANDBOX 2.0</span>
+      </div>
+      <div class="stats-group">
+        <div class="stat-pill"><span class="stat-label">FPS:</span> <span id="fps-display">60</span></div>
+        <div class="stat-pill"><span class="stat-label">PARTICLES:</span> <span id="particle-count">0</span></div>
+        <div class="stat-pill"><span class="stat-label">DIST:</span> <span id="dist-display">0 m</span></div>
+        <div class="stat-pill score-pill"><span class="stat-label">SCORE:</span> <span id="score-display">0</span></div>
+        <div class="stat-pill"><span class="stat-label">KILLS:</span> <span id="kill-display">0</span></div>
+        <div class="stat-pill"><span class="stat-label">HERO:</span> <span id="hero-state">READY</span></div>
+      </div>
+      <div class="top-controls">
+        <button id="btn-pause" class="btn btn-icon" title="Pause / Play (Space)">⏸️</button>
+        <button id="btn-step" class="btn btn-icon" title="Step One Frame">⏭️</button>
+        <button id="btn-clear" class="btn btn-danger" title="Clear Grid">CLEAR</button>
+        <button id="btn-reset-hero" class="btn btn-accent" title="Respawn Superhero (R)">RESPAWN HERO</button>
+      </div>
+    </header>
+
+    <!-- Canvas Simulation Viewport -->
+    <main id="viewport-container">
+      <div id="canvas-wrapper">
+        <canvas id="simCanvas" width="360" height="240"></canvas>
+        <div id="overlay-msg" class="overlay-msg hidden"></div>
+      </div>
+    </main>
+
+    <!-- Bottom Controls & Selector -->
+    <footer id="bottom-panel">
+      <!-- Mode Tabs -->
+      <div class="panel-section mode-selector">
+        <div class="section-title">ACTIVE MODE</div>
+        <div class="button-toggle-group">
+          <button id="mode-powers" class="btn-toggle active" data-mode="powers">🦸 SUPERPOWERS</button>
+          <button id="mode-elements" class="btn-toggle" data-mode="elements">🧪 ELEMENT BRUSH</button>
+        </div>
+        <div class="brush-size-group">
+          <span class="label">SIZE:</span>
+          <button class="btn-size" data-size="1">1</button>
+          <button class="btn-size active" data-size="3">3</button>
+          <button class="btn-size" data-size="6">6</button>
+          <button class="btn-size" data-size="12">12</button>
+        </div>
+      </div>
+
+      <!-- Superhero Powers Bar -->
+      <div id="powers-bar" class="panel-section selection-grid">
+        <div class="section-title">HERO POWERS (LEFT CLICK TO FIRE)</div>
+        <div class="button-grid">
+          <button class="btn-power active" data-power="laser" title="Heat Vision Laser">
+            <span class="power-icon">🔴</span> Laser Eyes
+          </button>
+          <button class="btn-power" data-power="smash" title="Kinetic Shockwave Punch">
+            <span class="power-icon">💥</span> Smash Shockwave
+          </button>
+          <button class="btn-power" data-power="disintegrate" title="Singularity Matter Vaporizer">
+            <span class="power-icon">🌀</span> Black Hole
+          </button>
+          <button class="btn-power" data-power="freeze" title="Cryo Breath">
+            <span class="power-icon">❄️</span> Cryo Freeze
+          </button>
+          <button class="btn-power" data-power="stomp" title="Seismic Ground Pound">
+            <span class="power-icon">⚡</span> Meteor Stomp
+          </button>
+        </div>
+      </div>
+
+      <!-- Element Palette Bar -->
+      <div id="elements-bar" class="panel-section selection-grid hidden">
+        <div class="section-title">ELEMENTS (LEFT CLICK TO DRAW, RIGHT CLICK TO ERASE)</div>
+        <div class="button-grid elements-grid">
+          <button class="btn-elem" data-elem="SAND" style="--c: #e5c158">Sand</button>
+          <button class="btn-elem" data-elem="WATER" style="--c: #3b82f6">Water</button>
+          <button class="btn-elem" data-elem="FIRE" style="--c: #ef4444">Fire</button>
+          <button class="btn-elem" data-elem="WOOD" style="--c: #8b5a2b">Wood</button>
+          <button class="btn-elem" data-elem="STONE" style="--c: #9ca3af">Stone</button>
+          <button class="btn-elem" data-elem="GUNPOWDER" style="--c: #6b7280">Gunpowder</button>
+          <button class="btn-elem" data-elem="ACID" style="--c: #22c55e">Acid</button>
+          <button class="btn-elem" data-elem="LAVA" style="--c: #f97316">Lava</button>
+          <button class="btn-elem" data-elem="ICE" style="--c: #93c5fd">Ice</button>
+          <button class="btn-elem" data-elem="C4" style="--c: #e11d48">C4 Nitro</button>
+          <button class="btn-elem" data-elem="GLASS" style="--c: #cbd5e1">Glass</button>
+          <button class="btn-elem" data-elem="OIL" style="--c: #78350f">Oil</button>
+          <button class="btn-elem" data-elem="PLANT" style="--c: #15803d">Plant</button>
+          <button class="btn-elem btn-erase" data-elem="AIR">Eraser</button>
+        </div>
+      </div>
+
+      <!-- Monster Spawn Panel -->
+      <div class="panel-section monster-section">
+        <div class="section-title">👹 SPAWN ENEMIES</div>
+        <div class="button-grid monsters-grid">
+          <button class="btn-monster" id="spawn-stomper" title="Small fast ground crawlers">
+            <span class="monster-icon">👾</span>
+            <span class="monster-name">Stomper</span>
+            <span class="monster-hp">HP: 80</span>
+          </button>
+          <button class="btn-monster" id="spawn-brute" title="Heavy armored tank monster">
+            <span class="monster-icon">🤖</span>
+            <span class="monster-name">Brute</span>
+            <span class="monster-hp">HP: 200</span>
+          </button>
+          <button class="btn-monster" id="spawn-flyer" title="Fast flying combat drone">
+            <span class="monster-icon">🛸</span>
+            <span class="monster-name">Flyer</span>
+            <span class="monster-hp">HP: 60</span>
+          </button>
+          <button class="btn-monster btn-kaiju" id="spawn-kaiju" title="Colossal fire-breathing Kaiju Rex!">
+            <span class="monster-icon">🦕</span>
+            <span class="monster-name">KAIJU REX</span>
+            <span class="monster-hp">HP: 1500</span>
+          </button>
+          <button class="btn-monster btn-wave" id="spawn-wave" title="Spawn a full invasion wave">
+            <span class="monster-icon">💀</span>
+            <span class="monster-name">INVASION WAVE</span>
+            <span class="monster-hp">x4 monsters</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Instructions -->
+      <div class="panel-section instructions-section">
+        <div class="section-title">HERO CONTROLS</div>
+        <div class="instructions-text">
+          <p><strong>A / D or ◄ / ►:</strong> Walk left/right</p>
+          <p><strong>W or Space or ▲:</strong> Jump / Fly Upward</p>
+          <p><strong>F:</strong> Toggle Super Flight Mode</p>
+          <p><strong>Shift:</strong> Supersonic Speed Boost</p>
+          <p><strong>Mouse Left:</strong> Aim & Unleash Superpower</p>
+          <p><strong>Mouse Right:</strong> Quick Element Brush</p>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Game Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/engine/elements.js"></script>
+  <script src="js/engine/grid.js"></script>
+  <script src="js/engine/physics.js"></script>
+  <script src="js/engine/city_generator.js"></script>
+  <script src="js/engine/world.js"></script>
+  <script src="js/entities/hero.js"></script>
+  <script src="js/entities/powers.js"></script>
+  <script src="js/entities/monsters.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

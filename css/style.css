@@ -1,0 +1,556 @@
+/* ==========================================================================
+   HERO POWDER — CSS STYLESHEET
+   Retro Arcade Aesthetics + Crisp Pixelated Canvas Viewport
+   ========================================================================== */
+
+:root {
+  --bg-dark: #0a0c10;
+  --bg-card: #131722;
+  --bg-card-hover: #1c2233;
+  --border-color: #273046;
+  --text-main: #f1f5f9;
+  --text-muted: #94a3b8;
+  --primary: #00f0ff;
+  --accent-gold: #fbbf24;
+  --accent-danger: #f43f5e;
+  --accent-success: #10b981;
+  --font-retro: 'Press Start 2P', monospace;
+  --font-ui: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+  --glow-cyan: 0 0 12px rgba(0, 240, 255, 0.45);
+  --glow-gold: 0 0 12px rgba(251, 191, 36, 0.45);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  font-family: var(--font-ui);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  user-select: none;
+  overflow-x: hidden;
+  padding: 12px;
+}
+
+#game-app {
+  width: 100%;
+  max-width: 1100px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ==========================================================================
+   TOP BAR & STATS
+   ========================================================================== */
+#top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 18px;
+  background: #0d1017;
+  border-bottom: 1px solid var(--border-color);
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brand .logo-icon {
+  font-size: 1.4rem;
+  filter: drop-shadow(0 0 8px var(--primary));
+}
+
+.brand h1 {
+  font-family: var(--font-retro);
+  font-size: 0.95rem;
+  letter-spacing: 1px;
+  color: #fff;
+  text-shadow: 0 0 8px rgba(0, 240, 255, 0.6);
+}
+
+.brand .badge {
+  font-family: var(--font-retro);
+  font-size: 0.55rem;
+  background: var(--accent-gold);
+  color: #000;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 700;
+}
+
+.stats-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.stat-pill {
+  background: #171d2c;
+  border: 1px solid #2d3748;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-family: var(--font-retro);
+}
+
+.stat-label {
+  color: var(--text-muted);
+  margin-right: 4px;
+}
+
+#fps-display {
+  color: var(--accent-success);
+}
+
+#particle-count {
+  color: var(--primary);
+}
+
+#hero-state {
+  color: var(--accent-gold);
+}
+
+.top-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ==========================================================================
+   BUTTONS
+   ========================================================================== */
+.btn {
+  background: #1f2739;
+  border: 1px solid #334155;
+  color: #fff;
+  padding: 7px 12px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: var(--font-ui);
+}
+
+.btn:hover {
+  background: #2b354d;
+  border-color: #475569;
+}
+
+.btn:active {
+  transform: translateY(1px);
+}
+
+.btn-icon {
+  font-size: 0.9rem;
+  padding: 6px 10px;
+}
+
+.btn-danger {
+  background: #7f1d1d;
+  border-color: #991b1b;
+}
+
+.btn-danger:hover {
+  background: #991b1b;
+}
+
+.btn-accent {
+  background: #0284c7;
+  border-color: #0369a1;
+}
+
+.btn-accent:hover {
+  background: #0369a1;
+}
+
+/* ==========================================================================
+   CANVAS VIEWPORT
+   ========================================================================== */
+#viewport-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #050608;
+  padding: 16px;
+  position: relative;
+}
+
+#canvas-wrapper {
+  position: relative;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.9), 0 0 1px 1px rgba(0, 240, 255, 0.2);
+  border-radius: 4px;
+  overflow: hidden;
+  line-height: 0;
+}
+
+/* CRUCIAL: Dan-Ball Pixelated Canvas Upscaling */
+#simCanvas {
+  display: block;
+  width: 900px;
+  height: 600px;
+  max-width: 100%;
+  max-height: 65vh;
+  aspect-ratio: 360 / 240;
+  background-color: #000;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-crisp-edges;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  cursor: crosshair;
+}
+
+.overlay-msg {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.85);
+  border: 1px solid var(--primary);
+  color: var(--primary);
+  font-family: var(--font-retro);
+  font-size: 0.75rem;
+  padding: 8px 16px;
+  border-radius: 6px;
+  pointer-events: none;
+  box-shadow: var(--glow-cyan);
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ==========================================================================
+   BOTTOM CONTROLS & PALETTES
+   ========================================================================== */
+#bottom-panel {
+  display: grid;
+  grid-template-columns: 240px 1fr 240px;
+  gap: 12px;
+  padding: 14px 18px;
+  background: #0f131c;
+  border-top: 1px solid var(--border-color);
+}
+
+.panel-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.section-title {
+  font-size: 0.65rem;
+  font-family: var(--font-retro);
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+}
+
+/* Mode Switch & Brush Sizes */
+.button-toggle-group {
+  display: flex;
+  gap: 6px;
+}
+
+.btn-toggle {
+  flex: 1;
+  background: #192030;
+  border: 1px solid #2d3748;
+  color: #94a3b8;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 7px 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-toggle.active {
+  background: #0369a1;
+  border-color: var(--primary);
+  color: #fff;
+  box-shadow: var(--glow-cyan);
+}
+
+.brush-size-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.brush-size-group .label {
+  font-size: 0.65rem;
+  font-family: var(--font-retro);
+  color: var(--text-muted);
+}
+
+.btn-size {
+  background: #171d2b;
+  border: 1px solid #334155;
+  color: #cbd5e1;
+  width: 32px;
+  height: 26px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-size.active {
+  background: var(--accent-gold);
+  border-color: var(--accent-gold);
+  color: #000;
+  box-shadow: var(--glow-gold);
+}
+
+/* Button Grids */
+.button-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 6px;
+}
+
+.elements-grid {
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  max-height: 110px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.elements-grid::-webkit-scrollbar {
+  width: 5px;
+}
+
+.elements-grid::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 4px;
+}
+
+/* Superpower Buttons */
+.btn-power {
+  background: #1a2233;
+  border: 1px solid #2e3a54;
+  color: #e2e8f0;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-power:hover {
+  background: #25314a;
+}
+
+.btn-power.active {
+  background: #431407;
+  border-color: #f97316;
+  color: #fff;
+  box-shadow: 0 0 10px rgba(249, 115, 22, 0.4);
+}
+
+/* Element Palette Buttons */
+.btn-elem {
+  background: #171d2b;
+  border: 1px solid #2a3449;
+  color: #cbd5e1;
+  padding: 6px 8px;
+  border-radius: 5px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.btn-elem::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background-color: var(--c, #94a3b8);
+  box-shadow: 0 0 5px var(--c, #94a3b8);
+}
+
+.btn-elem:hover {
+  background: #242d42;
+}
+
+.btn-elem.active {
+  background: #25334d;
+  border-color: var(--c, #00f0ff);
+  box-shadow: 0 0 8px rgba(0, 240, 255, 0.3);
+}
+
+.btn-erase {
+  border-color: #64748b;
+  color: #94a3b8;
+}
+
+/* Quick Instructions Box */
+.instructions-section {
+  background: #0b0e14;
+  border: 1px solid #1e2638;
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+.instructions-text {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  line-height: 1.35;
+}
+
+.instructions-text strong {
+  color: #f1f5f9;
+}
+
+/* Score pill highlight */
+.score-pill {
+  border-color: #fbbf24 !important;
+}
+.score-pill #score-display {
+  color: #fbbf24;
+  font-weight: 700;
+}
+#kill-display { color: #f43f5e; }
+
+/* Monster Spawn Section */
+.monster-section {
+  grid-column: span 3; /* Full width in the bottom panel */
+}
+
+.monsters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(105px, 1fr));
+  gap: 7px;
+}
+
+.btn-monster {
+  background: #1a0f20;
+  border: 1px solid #4a1d6e;
+  color: #e2e8f0;
+  padding: 8px 6px;
+  border-radius: 8px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  transition: all 0.15s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-monster::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent 60%, rgba(168, 85, 247, 0.12));
+}
+
+.btn-monster:hover {
+  background: #2d1845;
+  border-color: #7c3aed;
+  box-shadow: 0 0 10px rgba(168, 85, 247, 0.3);
+  transform: translateY(-1px);
+}
+
+.btn-monster:active {
+  transform: translateY(0px);
+}
+
+.monster-icon {
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.monster-name {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #c4b5fd;
+  letter-spacing: 0.3px;
+}
+
+.monster-hp {
+  font-size: 0.58rem;
+  color: #6b7280;
+}
+
+/* Kaiju button — special blood red treatment */
+.btn-kaiju {
+  background: #1f0505;
+  border-color: #991b1b;
+  animation: kaiju-pulse 2s infinite;
+}
+
+.btn-kaiju .monster-name {
+  color: #fca5a5;
+}
+
+.btn-kaiju:hover {
+  background: #3b0a0a;
+  border-color: #ef4444;
+  box-shadow: 0 0 14px rgba(239, 68, 68, 0.5);
+}
+
+@keyframes kaiju-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+  50% { box-shadow: 0 0 8px 2px rgba(239, 68, 68, 0.35); }
+}
+
+/* Invasion wave button */
+.btn-wave {
+  background: #0f0f1e;
+  border-color: #374151;
+  border-style: dashed;
+}
+
+.btn-wave .monster-name {
+  color: #f87171;
+}
+
+.btn-wave:hover {
+  background: #1a1a30;
+  border-color: #6b7280;
+  border-style: solid;
+}
+
+/* Responsive collapse for small screens */
+@media (max-width: 900px) {
+  #bottom-panel {
+    grid-template-columns: 1fr;
+  }
+  .monster-section {
+    grid-column: span 1;
+  }
+}
